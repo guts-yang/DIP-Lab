@@ -69,17 +69,6 @@ img = data.brick()       # 纹理，适合实验五
 - [Papers with Code Datasets](https://paperswithcode.com/datasets) 按任务检索学术数据集
 - [UCI Machine Learning Repository](https://archive.ics.uci.edu/) Skin Segmentation 数据集（肤色分类经典数据）
 
-## 按选题推荐（课程设计用）
-
-| 选题 | 可用数据集 |
-| --- | --- |
-| 文档扫描增强 | [SmartDoc 2015 文档校正挑战赛](https://www.iapr-tc11.org/mediawiki/index.php/SmartDoc_2015_Challenge)、Kaggle `document scanning` |
-| 老照片修复 | Kaggle `old photo restoration`、[NTIRE 图像复原挑战赛](https://data.vision.ee.ethz.ch/cvl/ntire/) |
-| 低照度增强 | [LOL Dataset](https://daooshee.github.io/BMVC2018website/)（低光照配对数据）、[ExDark](https://github.com/cs-chan/Exclusively-Dark-Image-Dataset) |
-| 人脸美颜 | [CelebA](https://mmlab.ie.cuhk.edu.hk/projects/CelebA.html)、[FFHQ](https://github.com/NVlabs/ffhq-dataset) |
-| 医学影像 | [MURA](https://stanfordmlgroup.github.io/competitions/mura/)（X 光）、[DRIVE](https://drive.grand-challenge.org/)（眼底）、[HAM10000](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/DBW86T)（皮肤镜） |
-| 工业缺陷检测 | [MVTec AD](https://www.mvtec.com/company/research/datasets/mvtec-ad)、[KolektorSDD](https://www.vicos.si/Downloads/KolektorSDD)、[NEU-DET](http://faculty.neu.edu.cn/yunhyan/NEU_surface_defect_database.html)（东北大学钢材表面缺陷） |
-
 ## 下载建议
 
 1. 优先用 scikit-image / OpenCV 内置图，零配置最快。
