@@ -77,3 +77,11 @@ ehthumbs.db
 
 # 实时运行产生的临时结果
 lab-showcase/runtime/
+
+# 隐私：真实证件照一律不入库（以拍摄日期命名的原图）
+data/raw/20*.JPG
+data/raw/20*.jpg
+data/raw/20*.jpeg
+data/raw/20*.png
+data/raw/id_*
+data/raw/证件照*
