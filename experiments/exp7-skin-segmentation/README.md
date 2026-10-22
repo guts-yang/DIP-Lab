@@ -10,20 +10,39 @@
 exp7-skin-segmentation/
 ├── code/
 │   └── skin_segmentation.py
-├── images/              放入自备照片（jpg/png/bmp）
+├── images/              可选：本实验自备照片
 │   └── output/          脚本输出结果
 └── report/
 ```
+
+## 输入图像
+
+脚本按以下优先级自动查找输入：
+
+1. 命令行传入的路径（文件或目录）
+2. `data/raw/`（仓库统一原始图库，推荐放这里）
+3. 本实验 `images/`
+4. 内置合成示意图（兜底）
+
+当前 `data/raw/` 已放入 6 张证件照，覆盖蓝底、白底、灰底三种背景。
 
 ## 运行方式
 
 ```bash
 cd code
-python skin_segmentation.py [图像路径]
+
+# 单图模式（自动取 data/raw 第一张）
+python skin_segmentation.py
+
+# 指定单张
+python skin_segmentation.py /path/to/photo.jpg
+
+# 批量模式：处理目录下所有照片，每张输出到独立子目录
+python skin_segmentation.py /Users/.../DIP-Lab/data/raw
 ```
 
-若不指定路径，脚本会自动在 `../images/` 下查找第一张照片；若都没有，则用内置合成示意图演示。
-建议把自己的证件照或自拍照放到 `images/` 目录后再运行。
+批量模式下输出结构为 `images/output/<图片名>/`，互不覆盖。
+图像会等比缩放并短边补白，避免人脸被拉伸变形。
 
 ## 实现要点
 
@@ -46,6 +65,19 @@ python skin_segmentation.py [图像路径]
 | `04_face_candidate_<method>.png` | 最大连通域提取的人脸候选 |
 | `masks_grid.png` / `overlay_grid.png` | 三种方法对比 |
 | `05_fused_vote.png` / `06_fused_result.png` | 投票融合结果 |
+
+## 真实证件照测试结果
+
+已对 `data/raw/` 下 6 张证件照批量运行，共生成 96 张结果图，保存在 `images/output/<图片名>/`。
+
+覆盖背景：蓝底（2024-12-25、2024-1-8）、白底（2026-7-4）、灰底（2026-7-5）等。
+
+观察到的规律：
+
+- HSV 在蓝底、白底背景下分割最干净，肤色区域完整且背景残留少。
+- YCbCr 对亮度变化鲁棒，面部轮廓贴合较好，但在部分区域会把颈部/衣物边缘纳入。
+- RGB 规则受光照影响最大，容易在阴影区出现漏检。
+- 三方法投票融合后，背景误检明显减少，结果比任一单一方法更稳。
 
 ## 报告建议
 
