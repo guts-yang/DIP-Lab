@@ -33,9 +33,32 @@ import numpy as np  # noqa: E402
 import streamlit as st  # noqa: E402
 from matplotlib import pyplot as plt  # noqa: E402
 
-# Linux 容器缺少中文字体时静默回退，避免绘图抛错
-plt.rcParams["font.sans-serif"] = ["Noto Sans CJK SC", "DejaVu Sans", "SimHei"]
+# 字体处理：Streamlit Cloud(Linux) 通常没有中文字体，直接写中文会渲染成方框。
+# 这里探测系统可用中文字体，有则用中文，无则回退到英文标签。
+def has_cjk_font() -> bool:
+    """检测系统中是否存在可用的中文字体。"""
+    from matplotlib import font_manager
+
+    cjk_keys = ("CJK", "Hei", "Song", "YaHei", "PingFang", "SimHei", "Noto Sans SC", "WenQuanYi", "Arial Unicode")
+    for f in font_manager.fontManager.ttflist:
+        if any(k.lower() in f.name.lower() for k in cjk_keys):
+            return True
+    return False
+
+
+CJK = has_cjk_font()
+if CJK:
+    plt.rcParams["font.sans-serif"] = ["Noto Sans CJK SC", "PingFang SC", "SimHei", "DejaVu Sans"]
 plt.rcParams["axes.unicode_minus"] = False
+
+# 图表标签：有中文字体用中文，否则用英文，避免方框
+LBL = {
+    "source": ("原图", "Source") if CJK else ("Source", "Source"),
+    "equalized": ("均衡化", "Equalized") if CJK else ("Equalized", "Equalized"),
+    "matched": ("规定化", "Matched") if CJK else ("Matched", "Matched"),
+    "xlabel": ("灰度级", "Gray Level") if CJK else ("Gray Level", "Gray Level"),
+    "ylabel": ("像素数", "Count") if CJK else ("Count", "Count"),
+}
 
 EXP = {
     "exp1": ROOT / "experiments" / "exp1-histogram" / "code",
@@ -117,18 +140,56 @@ def default_bgr(mod) -> np.ndarray:
     return mod.make_demo_image()
 
 
+def _img_kwargs() -> dict:
+    """兼容不同 Streamlit 版本的图片宽度参数名。"""
+    try:
+        import inspect
+
+        if "use_container_width" in inspect.signature(st.image).parameters:
+            return {"use_container_width": True}
+    except Exception:
+        pass
+    return {}
+
+
+def _pyplot(fig):
+    """兼容显示 matplotlib 图表。"""
+    try:
+        st.pyplot(fig)
+    finally:
+        plt.close(fig)
+
+
 def show(img, caption: str = ""):
-    """统一显示：BGR 转 RGB 后交给 Streamlit。"""
+    """统一显示：BGR 转 RGB 后交给 Streamlit；非数组（如字符串）给出明确提示。"""
+    if not isinstance(img, np.ndarray):
+        st.error(f"显示内容不是图像（收到 {type(img).__name__}）：{img}")
+        return
+    kw = _img_kwargs()
     if img.ndim == 2:
-        st.image(img, caption=caption, use_container_width=True, clamp=True)
+        st.image(img, caption=caption, clamp=True, **kw)
     else:
-        st.image(cv2.cvtColor(img, cv2.COLOR_BGR2RGB), caption=caption, use_container_width=True)
+        st.image(cv2.cvtColor(img, cv2.COLOR_BGR2RGB), caption=caption, **kw)
 
 
 def grid(images: list, cols: int = 3):
-    for i in range(0, len(images), cols):
+    """网格显示。元素应为 (图像, 说明)；若为 (说明, 图像) 会自动纠正顺序。"""
+    norm = []
+    for item in images:
+        if not isinstance(item, (tuple, list)) or len(item) != 2:
+            continue
+        a, b = item
+        # 允许 (图, 文) 或 (文, 图) 两种写法，统一成 (图, 文)
+        if isinstance(a, np.ndarray):
+            img, cap = a, b
+        elif isinstance(b, np.ndarray):
+            img, cap = b, a
+        else:
+            continue
+        norm.append((img, str(cap)))
+    for i in range(0, len(norm), cols):
         row = st.columns(cols)
-        for c, (img, cap) in zip(row, images[i : i + cols]):
+        for c, (img, cap) in zip(row, norm[i : i + cols]):
             with c:
                 show(img, cap)
 
@@ -166,11 +227,14 @@ with tab1:
 
     grid([(src, "原图"), (adj, f"α={alpha}, β={beta}"), (eq, "均衡化"), (mat, "规定化")], 4)
     fig, ax = plt.subplots(1, 3, figsize=(12, 3))
-    for a, (t, im) in zip(ax, [("原图", src), ("均衡化", eq), ("规定化", mat)]):
+    for a, (t, im) in zip(ax, [(LBL["source"][0], src), (LBL["equalized"][0], eq), (LBL["matched"][0], mat)]):
         a.hist(im.flatten(), bins=256, range=(0, 256), color="steelblue")
         a.set_title(t)
         a.set_xlim(0, 255)
-    st.pyplot(fig)
+        a.set_xlabel(LBL["xlabel"][0])
+    ax[0].set_ylabel(LBL["ylabel"][0])
+    fig.tight_layout()
+    _pyplot(fig)
 
 # ---------------------------------------------------------------- 实验二
 with tab2:
@@ -219,7 +283,8 @@ with tab3:
         "中点": m.midpoint_filter(noisy, ksize),
         "修正阿尔法均值": m.alpha_trimmed_mean_filter(noisy, ksize, 2),
     }
-    grid([(src, "原图"), (noisy, f"加噪 {m.psnr(src, noisy):.2f} dB")] + list(res.items()), 4)
+    grid([(src, "原图"), (noisy, f"加噪 {m.psnr(src, noisy):.2f} dB")]
+         + [(v, f"{k} {m.psnr(src, v):.2f} dB") for k, v in res.items()], 4)
     st.dataframe(
         {"方法": ["加噪图"] + list(res.keys()),
          "PSNR(dB)": [f"{m.psnr(src, noisy):.2f}"] + [f"{m.psnr(src, v):.2f}" for v in res.values()]},
