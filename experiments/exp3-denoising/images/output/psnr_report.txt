@@ -1,0 +1,14 @@
+[gaussian] 加噪后 PSNR = 20.39 dB
+  - median_k3: PSNR = 27.56 dB
+  - median_k5: PSNR = 30.20 dB
+  - max_k3: PSNR = 16.39 dB
+  - min_k3: PSNR = 15.61 dB
+  - midpoint_k3: PSNR = 25.89 dB
+[salt_pepper] 加噪后 PSNR = 18.19 dB
+  - median_k3: PSNR = 45.44 dB
+  - median_k5: PSNR = 45.74 dB
+  - max_k3: PSNR = 14.47 dB
+  - min_k3: PSNR = 10.47 dB
+  - midpoint_k3: PSNR = 15.69 dB
+[mixed] 加噪后 PSNR = 19.11 dB
+  - alpha_trimmed_k3: PSNR = 31.41 dB

@@ -9,6 +9,8 @@
 输出：
     ../images/output/ 下的锐化与边缘检测结果
 """
+from __future__ import annotations
+
 
 import os
 import sys

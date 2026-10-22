@@ -1,0 +1,15 @@
+[gaussian] 模糊 PSNR = 25.07 dB
+  - 逆滤波复原 PSNR = 12.29 dB
+  - 维纳滤波(K=0.01)复原 PSNR = 15.10 dB
+  - 维纳滤波(K=0.001)复原 PSNR = 14.94 dB
+  - 维纳滤波(K=0.01)复原 PSNR = 15.10 dB
+  - 维纳滤波(K=0.1)复原 PSNR = 15.24 dB
+[motion] 模糊 PSNR = 26.77 dB
+  - 逆滤波复原 PSNR = 14.62 dB
+  - 维纳滤波(K=0.01)复原 PSNR = 14.96 dB
+  - 维纳滤波(K=0.001)复原 PSNR = 14.83 dB
+  - 维纳滤波(K=0.01)复原 PSNR = 14.96 dB
+  - 维纳滤波(K=0.1)复原 PSNR = 15.07 dB
+[gaussian+noise] 逆滤波在有噪时明显退化，维纳滤波更稳健
+  - 逆滤波 PSNR = 5.60 dB
+  - 维纳滤波 PSNR = 15.22 dB

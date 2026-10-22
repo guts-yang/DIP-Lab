@@ -9,6 +9,8 @@
 输出：
     ../images/output/ 下的模糊与复原结果，以及 PSNR 对比
 """
+from __future__ import annotations
+
 
 import os
 import sys

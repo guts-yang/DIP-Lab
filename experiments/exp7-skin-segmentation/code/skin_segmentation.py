@@ -14,6 +14,8 @@
 输出：
     ../images/output/ 下的肤色掩膜与叠加结果
 """
+from __future__ import annotations
+
 
 import glob
 import os

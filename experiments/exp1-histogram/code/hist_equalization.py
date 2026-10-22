@@ -11,6 +11,8 @@
 输出：
     ../images/output/ 下的对比图与直方图
 """
+from __future__ import annotations
+
 
 import os
 import sys
@@ -18,6 +20,17 @@ import sys
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
+
+# 中文字体配置：优先使用 macOS 系统中文字体，避免图例中文显示为方框
+import platform as _platform
+if _platform.system() == "Darwin":
+    plt.rcParams["font.sans-serif"] = ["PingFang SC", "Heiti TC", "Arial Unicode MS", "STHeiti"]
+elif _platform.system() == "Windows":
+    plt.rcParams["font.sans-serif"] = ["SimHei", "Microsoft YaHei"]
+else:
+    plt.rcParams["font.sans-serif"] = ["Noto Sans CJK SC", "WenQuanYi Zen Hei"]
+plt.rcParams["axes.unicode_minus"] = False
+
 
 OUTPUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "images", "output")
 DEFAULT_SIZE = (400, 400)

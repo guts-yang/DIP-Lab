@@ -10,6 +10,8 @@
 输出：
     ../images/output/ 下的频谱图与滤波结果
 """
+from __future__ import annotations
+
 
 import os
 import sys
