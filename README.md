@@ -32,7 +32,8 @@ DIP-Lab/
 ├── .streamlit/config.toml      云端主题配置
 ├── data/
 │   ├── standard/               标准测试图（9 张，公开素材）
-│   └── raw/                    人脸图像（公开数据集，证件照已 gitignore）
+│   ├── raw/                    人脸图像（公开数据集，证件照已 gitignore）
+│   └── myself/                 本人证件照（本地专用，已 gitignore，不入库）
 ├── experiments/                七次实验
 │   ├── exp1-histogram/         实验一 直方图均衡化与规定化
 │   ├── exp2-gamma/             实验二 变换与伽马校正

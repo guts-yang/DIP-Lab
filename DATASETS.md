@@ -25,11 +25,26 @@
 python experiments/exp7-skin-segmentation/code/skin_segmentation.py data/raw
 ```
 
+## 本人证件照（data/myself/）
+
+你本人的 6 张证件照已恢复到 `data/myself/`（从 Git 历史 `1b9b66c` 提取），仅供本地实验使用。
+该目录已整体加入 `.gitignore`，**不会被提交到任何远端**，仓库公开后也不会泄露。
+
+本地用它做实验七：
+
+```bash
+python experiments/exp7-skin-segmentation/code/skin_segmentation.py data/myself
+```
+
+`app.py` 默认读取 `data/raw/`（公开数据集）而非 `data/myself/`，
+所以 Streamlit Cloud 上展示的始终是公开图像；只有你本地手动指定时才会用到本人照片。
+
 ## 隐私规则
 
 真实的个人证件照**不入库**。`.gitignore` 已排除以下模式：
 
 ```
+data/myself/                 ← 整个目录
 data/raw/20*.JPG
 data/raw/20*.jpg
 data/raw/20*.jpeg
@@ -38,4 +53,4 @@ data/raw/id_*
 data/raw/证件照*
 ```
 
-如需在本地用自己的照片做实验，把文件放进 `data/raw/` 即可，Git 会自动忽略，不会被提交。
+如需在本地用自己的照片做实验，把文件放进 `data/myself/` 或 `data/raw/` 即可，Git 会自动忽略，不会被提交。

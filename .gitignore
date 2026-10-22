@@ -85,3 +85,6 @@ data/raw/20*.jpeg
 data/raw/20*.png
 data/raw/id_*
 data/raw/证件照*
+
+# 个人隐私：本人证件照目录，永不入库
+data/myself/
