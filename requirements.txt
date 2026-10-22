@@ -1,0 +1,4 @@
+# 数字图像处理实验依赖
+opencv-python>=4.8.0
+numpy>=1.24.0
+matplotlib>=3.7.0
