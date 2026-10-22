@@ -12,6 +12,7 @@
 from __future__ import annotations
 
 
+import glob
 import os
 import sys
 
@@ -31,6 +32,8 @@ plt.rcParams["axes.unicode_minus"] = False
 
 
 OUTPUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "images", "output")
+IMAGE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "images")
+STANDARD_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "data", "standard")
 GAMMA_VALUES = [0.4, 0.6, 1.0, 1.5, 2.2, 3.0]
 
 
@@ -47,12 +50,31 @@ def make_demo_image() -> np.ndarray:
     return img.astype(np.uint8)
 
 
-def load_image(path: str | None) -> np.ndarray:
+def _scan(directory: str) -> list[str]:
+    """扫描目录下所有图像（排除 output 目录），匹配大小写扩展名。"""
+    found: list[str] = []
+    for ext in ("*.jpg", "*.jpeg", "*.png", "*.bmp", "*.tif", "*.tiff"):
+        for d in (directory,):
+            found += [f for f in glob.glob(os.path.join(d, ext)) if "output" not in f]
+            found += [f for f in glob.glob(os.path.join(d, ext.upper())) if "output" not in f]
+    return sorted(set(found))
+
+
+def load_image(path: str | None = None) -> np.ndarray:
+    """按 data/standard -> 本实验 images/ -> 合成图 的优先级读取输入。"""
     if path:
         img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
         if img is None:
             raise FileNotFoundError(f"无法读取图像：{path}")
         return img
+    for directory in (STANDARD_DIR, IMAGE_DIR):
+        files = _scan(directory)
+        if files:
+            img = cv2.imread(files[0], cv2.IMREAD_GRAYSCALE)
+            if img is not None:
+                print(f"自动使用标准图：{os.path.basename(files[0])}")
+                return img
+    print("未找到标准图，使用内置合成示意图演示。")
     return make_demo_image()
 
 
