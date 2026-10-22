@@ -1,5 +1,7 @@
 # 实验六：数字图像复原
 
+> 底层原理与答辩问答：[PRINCIPLE.md](PRINCIPLE.md) ｜ [PDF 版](../../docs/principle/实验6-原理说明.pdf)
+
 > **底层原理（答辩必看）**：[PRINCIPLE.md](PRINCIPLE.md) —— 图像复原的数学原理与公式推导，含 退化模型、逆滤波、维纳滤波，以及老师常问问题与标准回答。
 
 ## 实验内容

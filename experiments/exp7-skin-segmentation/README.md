@@ -1,5 +1,7 @@
 # 实验七：人脸皮肤颜色分层
 
+> 底层原理与答辩问答：[PRINCIPLE.md](PRINCIPLE.md) ｜ [PDF 版](../../docs/principle/实验7-原理说明.pdf)
+
 > **底层原理（答辩必看）**：[PRINCIPLE.md](PRINCIPLE.md) —— 肤色分割的数学原理与公式推导，含 YCbCr/HSV、形态学、投票融合，以及老师常问问题与标准回答。
 
 ## 实验内容

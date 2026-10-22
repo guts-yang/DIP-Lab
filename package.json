@@ -1,0 +1,12 @@
+{
+  "name": "dip-lab",
+  "version": "1.0.0",
+  "private": true,
+  "description": "《数字图像处理》实验仓库 - 原理文档 PDF 生成依赖",
+  "scripts": {
+    "build:pdf": "python3 scripts/md_to_pdf.py"
+  },
+  "dependencies": {
+    "katex": "^0.16.11"
+  }
+}

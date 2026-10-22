@@ -70,6 +70,8 @@ python hist_equalization.py ~/xxx.jpg  # 使用自己的图像
 
 详见 [docs/lab-schedule-and-assessment-2026.pdf](docs/lab-schedule-and-assessment-2026.pdf)。
 
+每个实验目录下的 `PRINCIPLE.md` 讲解底层原理与答辩问答，PDF 版见 [docs/principle](docs/principle)。
+
 ## 报告模板
 
 - 实验报告：[docs/lab-report-template-2026.doc](docs/lab-report-template-2026.doc)
