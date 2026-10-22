@@ -26,7 +26,7 @@ import numpy as np
 
 # 输入目录优先级：data/raw（统一原始图库） > 本实验 images/
 _HERE = os.path.dirname(os.path.abspath(__file__))
-OUTPUT_DIR = os.path.join(_HERE, "..", "images", "output")
+OUTPUT_DIR = os.environ.get("DIP_OUTPUT_DIR") or os.path.join(_HERE, "..", "images", "output")
 IMAGE_DIR = os.path.join(_HERE, "..", "images")
 RAW_DIR = os.path.join(_HERE, "..", "..", "..", "data", "raw")
 DEFAULT_SIZE = 400

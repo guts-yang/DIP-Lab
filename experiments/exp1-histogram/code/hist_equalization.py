@@ -33,7 +33,7 @@ else:
 plt.rcParams["axes.unicode_minus"] = False
 
 
-OUTPUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "images", "output")
+OUTPUT_DIR = os.environ.get("DIP_OUTPUT_DIR") or os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "images", "output")
 IMAGE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "images")
 STANDARD_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "data", "standard")
 DEFAULT_SIZE = (400, 400)

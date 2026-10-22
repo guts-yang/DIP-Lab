@@ -20,7 +20,7 @@ import sys
 import cv2
 import numpy as np
 
-OUTPUT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "images", "output")
+OUTPUT_DIR = os.environ.get("DIP_OUTPUT_DIR") or os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "images", "output")
 IMAGE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "images")
 STANDARD_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "data", "standard")
 

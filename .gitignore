@@ -74,3 +74,6 @@ ehthumbs.db
 ~$*.xlsx
 ~$*.ppt
 ~$*.pptx
+
+# 实时运行产生的临时结果
+lab-showcase/runtime/
