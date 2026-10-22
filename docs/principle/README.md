@@ -1,5 +1,11 @@
 # 实验原理说明（PDF）
 
+## 总册（推荐打印 / 答辩携带）
+
+[数字图像处理-实验原理总册.pdf](数字图像处理-实验原理总册.pdf) —— 34 页，含封面与书签，七个实验按序合并。
+
+## 分册
+
 各实验 `PRINCIPLE.md` 的 PDF 版本，公式已用 LaTeX 渲染排版，可直接打印或提交。
 
 | PDF | 对应实验 |
@@ -23,3 +29,9 @@ python3 scripts/md_to_pdf.py
 
 脚本读取 `experiments/expN-*/PRINCIPLE.md`，Markdown 与 LaTeX 经渲染后由本机 Chrome 打印为 A4 PDF，输出到本目录。
 内容为离线生成，不依赖网络。
+
+合并为总册（含封面、书签、页码）：
+
+```bash
+python3 scripts/merge_principle_pdf.py
+```
