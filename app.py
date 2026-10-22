@@ -85,6 +85,9 @@ def load_mod(name: str, script: str):
     spec = importlib.util.spec_from_file_location(name, EXP[name] / script)
     mod = importlib.util.module_from_spec(spec)
     sys.modules[name] = mod
+    # 在脚本执行前注入本进程判定的中文字体可用性，
+    # 使实验脚本内部的图表标签与页面保持一致的中文/英文策略。
+    mod.CJK = CJK
     spec.loader.exec_module(mod)
     mod.OUTPUT_DIR = str(_RUNTIME / name)
     os.makedirs(mod.OUTPUT_DIR, exist_ok=True)

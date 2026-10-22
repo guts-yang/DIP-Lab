@@ -20,15 +20,36 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
-# 中文字体配置：优先使用 macOS 系统中文字体，避免图例中文显示为方框
-import platform as _platform
-if _platform.system() == "Darwin":
-    plt.rcParams["font.sans-serif"] = ["PingFang SC", "Heiti TC", "Arial Unicode MS", "STHeiti"]
-elif _platform.system() == "Windows":
-    plt.rcParams["font.sans-serif"] = ["SimHei", "Microsoft YaHei"]
-else:
-    plt.rcParams["font.sans-serif"] = ["Noto Sans CJK SC", "WenQuanYi Zen Hei"]
+# 中文字体配置：探测系统是否真有中文字体（Linux 容器常缺失）。
+# 无中文字体时自动回退英文标签，避免渲染成方框；app.py 可通过 LABELS 覆盖。
+from matplotlib import font_manager as _fm
+
+
+def _has_cjk_font() -> bool:
+    keys = ("cjk", "hei", "song", "yahei", "pingfang", "simhei",
+            "noto sans sc", "wenquanyi", "arial unicode", "heiti")
+    return any(any(k in f.name.lower() for k in keys) for f in _fm.fontManager.ttflist)
+
+
+CJK = _has_cjk_font()
+if CJK:
+    plt.rcParams["font.sans-serif"] = ["Noto Sans CJK SC", "PingFang SC", "SimHei",
+                                        "WenQuanYi Zen Hei", "DejaVu Sans"]
 plt.rcParams["axes.unicode_minus"] = False
+
+# 图表标签：有中文字体用中文，否则用英文。app.py 可按需覆盖。
+LABELS = {
+    "xlabel": ("输入灰度 r", "Input gray level r"),
+    "ylabel": ("输出灰度 s", "Output gray level s"),
+    "title": ("伽马变换曲线 s = c * r^gamma", "Gamma curves s = c * r^gamma"),
+    "identity": ("恒等变换", "identity"),
+}
+
+
+def _lbl(key: str) -> str:
+    """按字体可用性返回中文或英文标签。"""
+    zh, en = LABELS.get(key, (key, key))
+    return zh if CJK else en
 
 
 OUTPUT_DIR = os.environ.get("DIP_OUTPUT_DIR") or os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "images", "output")
@@ -101,10 +122,10 @@ def plot_gamma_curves() -> None:
     plt.figure(figsize=(6, 5))
     for g in GAMMA_VALUES:
         plt.plot(r * 255, (r ** g) * 255, label=f"gamma={g}")
-    plt.plot([0, 255], [0, 255], "k--", label="identity")
-    plt.xlabel("输入灰度 r")
-    plt.ylabel("输出灰度 s")
-    plt.title("伽马变换曲线 s = c * r^gamma")
+    plt.plot([0, 255], [0, 255], "k--", label=_lbl("identity"))
+    plt.xlabel(_lbl("xlabel"))
+    plt.ylabel(_lbl("ylabel"))
+    plt.title(_lbl("title"))
     plt.legend()
     plt.grid(alpha=0.3)
     plt.tight_layout()
