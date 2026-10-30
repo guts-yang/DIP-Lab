@@ -124,22 +124,40 @@ def gray(upload) -> np.ndarray:
     return cv2.cvtColor(bgr, cv2.COLOR_BGR2GRAY)
 
 
-def default_gray(mod) -> np.ndarray:
-    """无上传时使用标准测试图。"""
-    files = sorted(STANDARD_DIR.glob("*.[jp][pn]g")) + sorted(STANDARD_DIR.glob("*.JPG"))
-    if files:
-        img = cv2.imread(str(files[0]), cv2.IMREAD_GRAYSCALE)
-        if img is not None:
-            return img
+# 每个实验绑定一张专属示例图，保证七个栏目展示的图互不相同。
+# 说明：若统一取目录第一张，七个实验会全部显示同一幅图（狒狒 baboon）。
+SAMPLE_GRAY = {
+    "exp1": "cameraman.png",   # 直方图：经典低对比度人像
+    "exp2": "fruits.jpg",      # 伽马校正：亮度层次丰富
+    "exp3": "lena.jpg",        # 去噪：经典测试图
+    "exp4": "sudoku.png",      # 锐化：边缘与纹理清晰
+    "exp5": "baboon.jpg",      # 频域滤波：纹理丰富
+    "exp6": "home.jpg",        # 复原：含丰富细节
+}
+SAMPLE_BGR = {"exp7": "face_01.jpg"}   # 肤色分割：彩色人脸
+
+
+def default_gray(mod, key: str = "exp1") -> np.ndarray:
+    """无上传时使用该实验专属的标准测试图。"""
+    name = SAMPLE_GRAY.get(key)
+    if name:
+        p = STANDARD_DIR / name
+        if p.exists():
+            img = cv2.imread(str(p), cv2.IMREAD_GRAYSCALE)
+            if img is not None:
+                return img
     return mod.make_demo_image()
 
 
-def default_bgr(mod) -> np.ndarray:
-    files = sorted(RAW_DIR.glob("*.jpg")) + sorted(RAW_DIR.glob("*.JPG"))
-    if files:
-        img = cv2.imread(str(files[0]))
-        if img is not None:
-            return img
+def default_bgr(mod, key: str = "exp7") -> np.ndarray:
+    """无上传时使用该实验专属的彩色示例图。"""
+    name = SAMPLE_BGR.get(key)
+    if name:
+        p = RAW_DIR / name
+        if p.exists():
+            img = cv2.imread(str(p))
+            if img is not None:
+                return img
     return mod.make_demo_image()
 
 
@@ -218,7 +236,7 @@ with tab1:
     st.caption(PRINCIPLE["exp1"])
     m = M["exp1"]
     up = st.file_uploader("上传图像（可选，留空用标准图）", type=["jpg", "png", "jpeg", "bmp"], key="u1")
-    src = gray(up) if up else default_gray(m)
+    src = gray(up) if up else default_gray(m, "exp1")
     c1, c2 = st.columns(2)
     alpha = c1.slider("对比度 α", 0.2, 3.0, 1.8, 0.1)
     beta = c2.slider("亮度 β", -100, 100, 50, 5)
@@ -245,7 +263,7 @@ with tab2:
     st.caption(PRINCIPLE["exp2"])
     m = M["exp2"]
     up = st.file_uploader("上传图像（可选）", type=["jpg", "png", "jpeg", "bmp"], key="u2")
-    src = gray(up) if up else default_gray(m)
+    src = gray(up) if up else default_gray(m, "exp2")
     gamma = st.slider("γ（伽马值）", 0.1, 4.0, 1.0, 0.1)
     c = st.slider("常数 c", 0.2, 3.0, 1.0, 0.1)
 
@@ -266,7 +284,7 @@ with tab3:
     st.caption(PRINCIPLE["exp3"])
     m = M["exp3"]
     up = st.file_uploader("上传图像（可选）", type=["jpg", "png", "jpeg", "bmp"], key="u3")
-    src = gray(up) if up else default_gray(m)
+    src = gray(up) if up else default_gray(m, "exp3")
     ntype = st.selectbox("噪声类型", ["gaussian 高斯", "salt_pepper 椒盐", "mixed 混合"])
     sigma = st.slider("高斯噪声 σ", 5, 60, 25, 5)
     amount = st.slider("椒盐噪声比例", 0.01, 0.20, 0.05, 0.01)
@@ -300,7 +318,7 @@ with tab4:
     st.caption(PRINCIPLE["exp4"])
     m = M["exp4"]
     up = st.file_uploader("上传图像（可选）", type=["jpg", "png", "jpeg", "bmp"], key="u4")
-    src = gray(up) if up else default_gray(m)
+    src = gray(up) if up else default_gray(m, "exp4")
     c1, c2 = st.columns(2)
     kt = c1.selectbox("拉普拉斯模板", ["4", "8"])
     strength = c2.slider("锐化强度 c", 0.2, 3.0, 1.0, 0.1)
@@ -320,7 +338,7 @@ with tab5:
     st.caption(PRINCIPLE["exp5"])
     m = M["exp5"]
     up = st.file_uploader("上传图像（可选）", type=["jpg", "png", "jpeg", "bmp"], key="u5")
-    src = cv2.resize(gray(up) if up else default_gray(m), (400, 400))
+    src = cv2.resize(gray(up) if up else default_gray(m, "exp5"), (400, 400))
     d0 = st.slider("截止频率 D0", 5, 150, 40, 5)
     ftype = st.selectbox("滤波器类型", ["ideal 理想", "butterworth 巴特沃斯", "gaussian 高斯"])
     ft = ftype.split()[0]
@@ -340,7 +358,7 @@ with tab6:
     st.caption(PRINCIPLE["exp6"])
     m = M["exp6"]
     up = st.file_uploader("上传图像（可选）", type=["jpg", "png", "jpeg", "bmp"], key="u6")
-    src = cv2.resize(gray(up) if up else default_gray(m), (400, 400))
+    src = cv2.resize(gray(up) if up else default_gray(m, "exp6"), (400, 400))
     btype = st.selectbox("退化类型", ["gaussian 高斯模糊", "motion 运动模糊"])
     k = st.slider("维纳滤波 K", 0.001, 0.5, 0.01, 0.001, format="%.3f")
     add_noise = st.checkbox("叠加噪声（考察抗噪性）", value=True)
@@ -366,7 +384,7 @@ with tab7:
     st.info("本栏目使用公开的人脸数据集图像，不含任何真实证件照。")
     m = M["exp7"]
     up = st.file_uploader("上传人脸图（可选）", type=["jpg", "png", "jpeg", "bmp"], key="u7")
-    raw = to_bgr(up) if up else default_bgr(m)
+    raw = to_bgr(up) if up else default_bgr(m, "exp7")
     src = m.resize_keep_aspect(raw, 400)
 
     masks = {
