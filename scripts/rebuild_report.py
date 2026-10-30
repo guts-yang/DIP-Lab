@@ -171,6 +171,8 @@ def main():
 
     fig_no = 0
     fml_no = 0
+    tbl_no = 0
+    code_no = 0
     # 需要替换的正文内嵌公式: (exp, 原文片段, kind, 说明前缀)
     pending = {}
     for (ex, pat, kind) in FORMULAS:
@@ -208,11 +210,21 @@ def main():
         for c in kids[start:]:
             k = copy.deepcopy(c)
             txt = para_text(k)
-            # 图注重编号
+            # 图注重编号：全文连续 1..N
             m = re.match(r'^图\s?\d+(.*)$', txt)
             if m:
                 fig_no += 1
                 set_para_text(k, f'图 {fig_no}{m.group(1)}')
+            # 表注重编号：全文连续 1..N
+            m = re.match(r'^表\s?\d+(.*)$', txt)
+            if m:
+                tbl_no += 1
+                set_para_text(k, f'表 {tbl_no}{m.group(1)}')
+            # 代码标题重编号：全文连续 1..N
+            m = re.match(r'^代码\s?\d+(.*)$', txt)
+            if m:
+                code_no += 1
+                set_para_text(k, f'代码 {code_no}{m.group(1)}')
             # 内嵌公式 -> 抽出
             # 一段内可能含多个公式，逐个抽出
             hits = []
@@ -323,9 +335,21 @@ def main():
     # verify
     z = zipfile.ZipFile(outp)
     r2 = etree.fromstring(z.read('word/document.xml'))
-    t2 = ''.join(x.text or '' for x in r2.iter(W + 't'))
-    figs = re.findall(r'图 (\d+)', t2)
-    nums = [int(x) for x in figs]
+    def _seq(r2, prefix):
+        out = []
+        for pp in r2.iter(W + 'p'):
+            tt = ''.join(x.text or '' for x in pp.iter(W + 't')).strip()
+            mm = re.match(r'^' + prefix + r'\s?(\d+)', tt)
+            if mm:
+                out.append(int(mm.group(1)))
+        return out
+
+    figs = _seq(r2, '图')
+    tbls = _seq(r2, '表')
+    codes = _seq(r2, '代码')
+    print('图:', len(figs), '连续:', figs == list(range(1, len(figs) + 1)))
+    print('表:', len(tbls), '连续:', tbls == list(range(1, len(tbls) + 1)))
+    print('代码:', len(codes), '连续:', codes == list(range(1, len(codes) + 1)))
     rels2 = {r.get('Id'): r.get('Target') for r in etree.fromstring(z.read('word/_rels/document.xml.rels'))}
     bad = 0
     ti = 0
@@ -345,10 +369,9 @@ def main():
         if abs(cx / cy - real[0] / real[1]) > 0.03:
             bad += 1
     omml = len(list(r2.iter(MR + 'oMath')))
-    print('图注数:', len(nums), '连续递增:', nums == list(range(1, len(nums) + 1)))
-    print('图片数:', ti, '畸形:', bad)
+    print('图片:', ti, '畸形:', bad)
     print('OMML公式:', omml)
-    print('cover:', t2.count('数字图像处理实验报告书'))
+    print('cover:', ''.join(x.text or '' for x in r2.iter(W + 't')).count('数字图像处理实验报告书'))
     print('zip:', z.testzip() or 'OK')
 
 main()
