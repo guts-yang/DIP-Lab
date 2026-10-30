@@ -29,6 +29,7 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 OUTPUT_DIR = os.environ.get("DIP_OUTPUT_DIR") or os.path.join(_HERE, "..", "images", "output")
 IMAGE_DIR = os.path.join(_HERE, "..", "images")
 RAW_DIR = os.path.join(_HERE, "..", "..", "..", "data", "raw")
+PREFERRED_IMAGE = "face_01.jpg"
 DEFAULT_SIZE = 400
 
 
@@ -66,6 +67,12 @@ def find_input_image(path: str | None) -> np.ndarray:
         if img is None:
             raise FileNotFoundError(f"无法读取图像：{path}")
         return img
+    pref = os.path.join(RAW_DIR, PREFERRED_IMAGE)
+    if os.path.exists(pref):
+        img = cv2.imread(pref)
+        if img is not None:
+            print(f"使用本实验示例图：{PREFERRED_IMAGE}")
+            return img
     for directory in (RAW_DIR, IMAGE_DIR):
         files = _scan(directory)
         if files:

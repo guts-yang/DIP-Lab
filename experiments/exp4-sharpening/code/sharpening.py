@@ -22,6 +22,7 @@ import numpy as np
 OUTPUT_DIR = os.environ.get("DIP_OUTPUT_DIR") or os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "images", "output")
 IMAGE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "images")
 STANDARD_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "data", "standard")
+PREFERRED_IMAGE = "sudoku.png"
 
 
 def ensure_output_dir() -> None:
@@ -54,6 +55,12 @@ def load_image(path: str | None = None) -> np.ndarray:
         if img is None:
             raise FileNotFoundError(f"无法读取图像：{path}")
         return img
+    pref = os.path.join(STANDARD_DIR, PREFERRED_IMAGE)
+    if os.path.exists(pref):
+        img = cv2.imread(pref, cv2.IMREAD_GRAYSCALE)
+        if img is not None:
+            print(f"使用本实验示例图：{PREFERRED_IMAGE}")
+            return img
     for directory in (STANDARD_DIR, IMAGE_DIR):
         files = _scan(directory)
         if files:
