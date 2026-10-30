@@ -131,9 +131,9 @@ def plot_histograms(images: dict[str, np.ndarray], filename: str) -> None:
         plt.hist(img.flatten(), bins=256, range=(0, 256), color="steelblue")
         plt.title(title)
         plt.xlim(0, 255)
-        plt.xlabel("灰度级")
+        plt.xlabel("Gray level")
         if i == 1:
-            plt.ylabel("像素数")
+            plt.ylabel("Pixel count")
     plt.tight_layout()
     plt.savefig(os.path.join(OUTPUT_DIR, filename), dpi=120)
     plt.close()

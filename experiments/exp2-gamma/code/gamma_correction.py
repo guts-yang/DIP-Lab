@@ -47,9 +47,9 @@ LABELS = {
 
 
 def _lbl(key: str) -> str:
-    """按字体可用性返回中文或英文标签。"""
+    """图表标签统一使用英文，避免跨平台中文字体缺失导致乱码。"""
     zh, en = LABELS.get(key, (key, key))
-    return zh if CJK else en
+    return en
 
 
 OUTPUT_DIR = os.environ.get("DIP_OUTPUT_DIR") or os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "images", "output")
